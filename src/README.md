@@ -17,6 +17,7 @@ It proves two quality attributes with real, measured behaviour:
 ## Run
 
 ```bash
+cd src
 docker compose up --build
 ```
 

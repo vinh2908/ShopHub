@@ -47,7 +47,7 @@ ShopHub là sàn thương mại điện tử đa người bán (multi-vendor mar
 2. Bass, L., Clements, P., & Kazman, R. (2021). *Software Architecture in Practice (4th Edition)*. Addison-Wesley.
 3. Evans, E. (2003). *Domain-Driven Design: Tackling Complexity in the Heart of Software*. Addison-Wesley.
 4. Richardson, C. (2018). *Microservices Patterns: With examples in Java*. Manning Publications.
-5. Danh mục 12 Quyết định Kiến trúc ShopHub trong thư mục `docs/ADR/`.
+5. Danh mục 12 Quyết định Kiến trúc ShopHub trong thư mục `adr/`.
 
 ---
 
@@ -300,22 +300,22 @@ sequenceDiagram
 
 ## 4. Bảng tổng hợp các quyết định kiến trúc (ADR Summary)
 
-Hệ thống ShopHub thiết lập tổng cộng **12 Architecture Decision Records (ADR)** được lưu trữ chi tiết trong thư mục `docs/ADR/`. Toàn bộ các quyết định đều có ít nhất 2 phương án cân nhắc, hệ quả tiêu cực và truy vết trực tiếp về ASR:
+Hệ thống ShopHub thiết lập tổng cộng **12 Architecture Decision Records (ADR)** được lưu trữ chi tiết trong thư mục `adr/`. Toàn bộ các quyết định đều có ít nhất 2 phương án cân nhắc, hệ quả tiêu cực và truy vết trực tiếp về ASR:
 
 | Mã ADR | Tiêu đề quyết định | Trạng thái | Truy vết ASR / QA | Tóm tắt lý do lựa chọn & Trade-off |
 |---|---|---|---|---|
-| [ADR-001](file:///d:/ShopHub/docs/ADR/ADR-001.md) | Kiến trúc tổng thể: Modular Monolith lai | **Accepted** | ASR1, ASR2, ASR3, ASR4; QA1, QA2, QA5, QA7 | Chọn Modular Monolith lai thay vì Microservices để nhóm 5 người hoàn thành trong 15 tuần; ranh giới module rõ ràng sẵn sàng tách service. |
-| [ADR-002](file:///d:/ShopHub/docs/ADR/ADR-002.md) | Saga: Orchestration thay vì Choreography | **Accepted** | ASR2; QA2, QA6 | Chọn Orchestration để máy trạng thái tập trung, dễ kiểm soát bù trừ và truy vết đơn kẹt; chấp nhận nhất quán cuối cùng. |
-| [ADR-003](file:///d:/ShopHub/docs/ADR/ADR-003.md) | Tìm kiếm: PostgreSQL Full-Text trước, Elasticsearch khi cần | **Accepted** | ASR3; QA5 | Dùng `tsvector` + GIN index cho prototype M4 nhằm giảm tải vận hành; thiết kế qua interface sẵn sàng nâng cấp lên Elasticsearch. |
-| [ADR-004](file:///d:/ShopHub/docs/ADR/ADR-004.md) | Chiến lược Cache và Invalidation cho đường đọc | **Accepted** | ASR3; QA5, QA7 | Cache danh sách và tìm kiếm 30 giây; tuyệt đối không cache tồn kho làm nguồn sự thật để tránh bán vượt kho. |
-| [ADR-005](file:///d:/ShopHub/docs/ADR/ADR-005.md) | Shared Database với ranh giới module nghiêm ngặt | **Accepted** | ASR1, ASR2; QA1, QA2 | Chia sẻ một PostgreSQL nhưng phân định quyền bảng theo module repository; tạo điều kiện ghi Outbox trong cùng transaction. |
-| [ADR-006](file:///d:/ShopHub/docs/ADR/ADR-006.md) | Tồn kho Flash Sale: Trừ kho nguyên tử + Hàng đợi | **Accepted** | ASR1; QA1, QA7 | Kết hợp Redis atomic `DECRBY` để chắn tải đỉnh với PostgreSQL conditional update để chốt chặn bền vững. |
-| [ADR-007](file:///d:/ShopHub/docs/ADR/ADR-007.md) | Outbox Pattern thay cho Dual-Write | **Accepted** | ASR2; QA2, QA6 | Ghi domain event cùng transaction với đơn hàng; relay worker quét publish định kỳ để chống mất mát event khi mạng lỗi. |
-| [ADR-008](file:///d:/ShopHub/docs/ADR/ADR-008.md) | Adapter Pattern cho Payment và Shipping | **Accepted** | ASR4; QA4 | Chuẩn hóa interface chung cho thanh toán (`charge`) và vận chuyển (`createShipment`); thêm provider mới không sửa code lõi. |
-| [ADR-009](file:///d:/ShopHub/docs/ADR/ADR-009.md) | Rate Limiting và Queue-based Load Leveling | **Accepted** | ASR1, ASR3; QA1, QA5, QA7 | Giới hạn tần suất request tại API Gateway và san phẳng tải bằng hàng đợi để bảo vệ cơ sở dữ liệu không bị nghẽn sập. |
-| [ADR-010](file:///d:/ShopHub/docs/ADR/ADR-010.md) | Tách biệt dịch vụ Gợi ý và Đánh giá khỏi luồng đặt hàng | **Accepted** | ASR4; QA3 | Áp dụng vách ngăn Bulkhead và Circuit Breaker: Dịch vụ gợi ý/đánh giá lỗi thì trả về fallback rỗng, không chặn đặt hàng. |
-| [ADR-011](file:///d:/ShopHub/docs/ADR/ADR-011.md) | Stuck Saga Recovery Worker & Compensation Idempotency | **Accepted** *(Design v2)* | ASR2, ASR4; QA2, QA6 | Bổ sung worker chạy nền quét đơn kẹt `RESERVED` quá 60s để tự động bù trừ idempotent, xử lý rủi ro **Risk R2** từ ATAM. |
-| [ADR-012](file:///d:/ShopHub/docs/ADR/ADR-012.md) | Khắc phục sự cố Redis Gate & Single Source of Truth | **Accepted** *(Design v2)* | ASR1, ASR3; QA1, QA7 | Khẳng định PostgreSQL là Single Source of Truth; bổ sung endpoint đối soát `POST /admin/sync-flash-stock`, xử lý **Risk R1**. |
+| [ADR-001](file:///d:/ShopHub/adr/ADR-001.md) | Kiến trúc tổng thể: Modular Monolith lai | **Accepted** | ASR1, ASR2, ASR3, ASR4; QA1, QA2, QA5, QA7 | Chọn Modular Monolith lai thay vì Microservices để nhóm 5 người hoàn thành trong 15 tuần; ranh giới module rõ ràng sẵn sàng tách service. |
+| [ADR-002](file:///d:/ShopHub/adr/ADR-002.md) | Saga: Orchestration thay vì Choreography | **Accepted** | ASR2; QA2, QA6 | Chọn Orchestration để máy trạng thái tập trung, dễ kiểm soát bù trừ và truy vết đơn kẹt; chấp nhận nhất quán cuối cùng. |
+| [ADR-003](file:///d:/ShopHub/adr/ADR-003.md) | Tìm kiếm: PostgreSQL Full-Text trước, Elasticsearch khi cần | **Accepted** | ASR3; QA5 | Dùng `tsvector` + GIN index cho prototype M4 nhằm giảm tải vận hành; thiết kế qua interface sẵn sàng nâng cấp lên Elasticsearch. |
+| [ADR-004](file:///d:/ShopHub/adr/ADR-004.md) | Chiến lược Cache và Invalidation cho đường đọc | **Accepted** | ASR3; QA5, QA7 | Cache danh sách và tìm kiếm 30 giây; tuyệt đối không cache tồn kho làm nguồn sự thật để tránh bán vượt kho. |
+| [ADR-005](file:///d:/ShopHub/adr/ADR-005.md) | Shared Database với ranh giới module nghiêm ngặt | **Accepted** | ASR1, ASR2; QA1, QA2 | Chia sẻ một PostgreSQL nhưng phân định quyền bảng theo module repository; tạo điều kiện ghi Outbox trong cùng transaction. |
+| [ADR-006](file:///d:/ShopHub/adr/ADR-006.md) | Tồn kho Flash Sale: Trừ kho nguyên tử + Hàng đợi | **Accepted** | ASR1; QA1, QA7 | Kết hợp Redis atomic `DECRBY` để chắn tải đỉnh với PostgreSQL conditional update để chốt chặn bền vững. |
+| [ADR-007](file:///d:/ShopHub/adr/ADR-007.md) | Outbox Pattern thay cho Dual-Write | **Accepted** | ASR2; QA2, QA6 | Ghi domain event cùng transaction với đơn hàng; relay worker quét publish định kỳ để chống mất mát event khi mạng lỗi. |
+| [ADR-008](file:///d:/ShopHub/adr/ADR-008.md) | Adapter Pattern cho Payment và Shipping | **Accepted** | ASR4; QA4 | Chuẩn hóa interface chung cho thanh toán (`charge`) và vận chuyển (`createShipment`); thêm provider mới không sửa code lõi. |
+| [ADR-009](file:///d:/ShopHub/adr/ADR-009.md) | Rate Limiting và Queue-based Load Leveling | **Accepted** | ASR1, ASR3; QA1, QA5, QA7 | Giới hạn tần suất request tại API Gateway và san phẳng tải bằng hàng đợi để bảo vệ cơ sở dữ liệu không bị nghẽn sập. |
+| [ADR-010](file:///d:/ShopHub/adr/ADR-010.md) | Tách biệt dịch vụ Gợi ý và Đánh giá khỏi luồng đặt hàng | **Accepted** | ASR4; QA3 | Áp dụng vách ngăn Bulkhead và Circuit Breaker: Dịch vụ gợi ý/đánh giá lỗi thì trả về fallback rỗng, không chặn đặt hàng. |
+| [ADR-011](file:///d:/ShopHub/adr/ADR-011.md) | Stuck Saga Recovery Worker & Compensation Idempotency | **Accepted** *(Design v2)* | ASR2, ASR4; QA2, QA6 | Bổ sung worker chạy nền quét đơn kẹt `RESERVED` quá 60s để tự động bù trừ idempotent, xử lý rủi ro **Risk R2** từ ATAM. |
+| [ADR-012](file:///d:/ShopHub/adr/ADR-012.md) | Khắc phục sự cố Redis Gate & Single Source of Truth | **Accepted** *(Design v2)* | ASR1, ASR3; QA1, QA7 | Khẳng định PostgreSQL là Single Source of Truth; bổ sung endpoint đối soát `POST /admin/sync-flash-stock`, xử lý **Risk R1**. |
 
 ---
 
@@ -333,8 +333,8 @@ Hệ thống ShopHub thiết lập tổng cộng **12 Architecture Decision Reco
   2. Đánh đổi giữa tính nhất quán cuối cùng (Eventual Consistency) của Saga Orchestration với tính nhất quán tức thời (2PC) để bảo vệ tính khả dụng của sàn.
   3. Đánh đổi độ tươi mới của dữ liệu hiển thị (TTL 30s) để giảm tải 85% truy vấn cơ sở dữ liệu.
 - **Hai rủi ro lớn nhất (Risks) và kế hoạch xử lý:**
-  - **Risk R1 (Mất đồng bộ hoặc sập Redis Gate):** Đã khắc phục trong Design v2 bằng cơ chế khởi tạo đồng bộ `syncFlashStockFromDb()` và endpoint đối soát cưỡng bức `POST /admin/sync-flash-stock` ([ADR-012](file:///d:/ShopHub/docs/ADR/ADR-012.md)).
-  - **Risk R2 (Đơn hàng bị kẹt trạng thái RESERVED khi server crash):** Đã khắc phục trong Design v2 bằng Background Stuck Saga Recovery Worker quét đơn quá hạn 60s để tự động hoàn kho idempotent ([ADR-011](file:///d:/ShopHub/docs/ADR/ADR-011.md)).
+  - **Risk R1 (Mất đồng bộ hoặc sập Redis Gate):** Đã khắc phục trong Design v2 bằng cơ chế khởi tạo đồng bộ `syncFlashStockFromDb()` và endpoint đối soát cưỡng bức `POST /admin/sync-flash-stock` ([ADR-012](file:///d:/ShopHub/adr/ADR-012.md)).
+  - **Risk R2 (Đơn hàng bị kẹt trạng thái RESERVED khi server crash):** Đã khắc phục trong Design v2 bằng Background Stuck Saga Recovery Worker quét đơn quá hạn 60s để tự động hoàn kho idempotent ([ADR-011](file:///d:/ShopHub/adr/ADR-011.md)).
 
 ---
 
@@ -431,8 +431,8 @@ Hệ thống ShopHub thiết lập tổng cộng **12 Architecture Decision Reco
 ### 8.1. Hướng dẫn thiết lập và tái hiện kịch bản kiểm chứng
 ```bash
 # 1. Khởi động toàn bộ cụm dịch vụ
-cd prototype
-docker compose up --build
+cd src
+docker compose up --build -d
 
 # 2. Kiểm tra trạng thái sẵn sàng (chờ Postgres & Redis healthy)
 curl http://localhost:3000/health
@@ -448,16 +448,15 @@ docker compose down
 ```
 
 ### 8.2. Danh mục tài liệu nộp kèm
-- Mã nguồn Prototype hoàn chỉnh trong thư mục `prototype/` (bao gồm `api/`, `web/`, `tests/`, `docker-compose.yml`).
+- Mã nguồn Prototype hoàn chỉnh trong thư mục `src/` (bao gồm `api/`, `web/`, `tests/`, `docker-compose.yml`, `README.md`).
+- Thư mục quyết định kiến trúc: `adr/` (ADR-001 đến ADR-012).
+- Thư mục sơ đồ kiến trúc nguồn: `diagrams/` (.mmd files).
 - Bộ tài liệu kiến trúc đầy đủ trong thư mục `docs/`:
   - `M1-Architectural-Drivers.md`
   - `M2-Architecture-Design-v1.md`
   - `M3-ATAM-Analysis.md`
-  - `Peer-Review-Template.md`
   - `SAD-Final.md` (Tài liệu này)
-  - `Slides-Demo.md` & `Slides-Presentation.html`
-  - `Demo-Script.md`
-  - `AI-Log.md`
-  - `Checklist-Final.md`
-  - 12 tài liệu ADR trong `docs/ADR/` (ADR-001 đến ADR-012).
+  - `Slides-Presentation.html`
+- Nhật ký AI: `ai-log.md` ở root.
+- Hướng dẫn và tổng quan: `README.md` ở root.
 

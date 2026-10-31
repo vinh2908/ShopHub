@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant C as Khách hàng
+    participant API as API / Rate Limiter
+    participant Q as Hàng đợi đặt hàng
+    participant I as Inventory (Atomic Decrement)
+    participant O as Ordering
+    C->>API: Mua flash sale
+    API->>API: Rate limiting, kiểm tra hợp lệ
+    API->>Q: Đưa request vào hàng đợi
+    Q->>I: Lấy request theo thứ tự, trừ kho nguyên tử
+    alt Còn hàng
+        I-->>O: StockReserved
+        O->>C: Tiếp tục thanh toán
+    else Hết hàng
+        I-->>O: StockOutOfStock
+        O->>C: Hết hàng
+    end

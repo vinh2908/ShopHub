@@ -1,0 +1,38 @@
+flowchart TB
+    subgraph CatalogModule["Catalog Container / Module"]
+        CatCtrl["Catalog Controller\nTiếp nhận GET /products, GET /products/:id"]
+        CacheMgr["Cache Manager\nKiểm tra cache Redis theo key products:list:q:flash\nTTL 30 giây & Invalidation"]
+        SearchEngine["Full-Text Search Engine\nTruy vấn PostgreSQL tsvector @@ plainto_tsquery và ILIKE"]
+        ProductRepo["Product Repository\nTruy vấn chi tiết sản phẩm và danh mục"]
+    end
+
+    CatCtrl -->|1. Kiểm tra cache| CacheMgr
+    CacheMgr -->|Cache Hit: Trả kết quả ngay| CatCtrl
+    CacheMgr -->|Cache Miss: Chuyển tiếp| SearchEngine
+    SearchEngine -->|2. Query database có GIN index| ProductRepo
+    ProductRepo -->|3. Đọc dữ liệu & lưu cache mới| CacheMgr
+
+    subgraph PaymentModule["Payment Container / Module"]
+        PayCtrl["Payment Controller / Service\nNhận yêu cầu charge tiền từ Saga Orchestrator"]
+        AdapterFactory["Payment Adapter Factory\nChọn Provider tương ứng (VNPay, MoMo)"]
+        VNPayAdapter["VNPay Adapter\nChuẩn hóa request và parse response VNPay"]
+        MoMoAdapter["MoMo Adapter\nChuẩn hóa request và parse response MoMo"]
+        FailureInjector["Failure Rate Injector\nMô phỏng tỷ lệ lỗi (0% - 100%) để test bù trừ"]
+    end
+
+    PayCtrl --> AdapterFactory
+    AdapterFactory --> VNPayAdapter
+    AdapterFactory --> MoMoAdapter
+    VNPayAdapter --> FailureInjector
+    MoMoAdapter --> FailureInjector
+
+    subgraph ShippingModule["Shipping Container / Module"]
+        ShipCtrl["Shipping Controller / Service\nNhận yêu cầu tạo vận đơn từ Saga Orchestrator"]
+        CarrierFactory["Carrier Adapter Factory\nChọn đơn vị vận chuyển tương ứng (GHN, GHTK)"]
+        GHNAdapter["GHN Carrier Adapter\nTạo mã vận đơn GHN-{orderId}-{timestamp}"]
+        GHTKAdapter["GHTK Carrier Adapter\nTạo mã vận đơn GHTK-{orderId}-{timestamp}"]
+    end
+
+    ShipCtrl --> CarrierFactory
+    CarrierFactory --> GHNAdapter
+    CarrierFactory --> GHTKAdapter

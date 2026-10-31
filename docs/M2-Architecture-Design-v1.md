@@ -56,6 +56,8 @@ Buổi Event Storming của nhóm (theo hướng dẫn: 2 giờ, giấy note ho�
 
 ## 3. C4 — Level 1: Context
 
+> *Tệp sơ đồ nguồn:* [`diagrams/c4-context.mmd`](file:///d:/ShopHub/diagrams/c4-context.mmd)
+
 ```mermaid
 flowchart TB
     subgraph ShopHubBoundary["Hệ thống ShopHub (Hệ thống phần mềm)"]
@@ -88,6 +90,8 @@ flowchart TB
 ---
 
 ## 4. C4 — Level 2: Container
+
+> *Tệp sơ đồ nguồn:* [`diagrams/c4-container.mmd`](file:///d:/ShopHub/diagrams/c4-container.mmd)
 
 ```mermaid
 flowchart TB
@@ -152,6 +156,9 @@ flowchart TB
 ---
 
 ## 5. C4 — Level 3: Component
+
+> *Tệp sơ đồ nguồn Ordering & Inventory:* [`diagrams/c4-component-ordering-inventory.mmd`](file:///d:/ShopHub/diagrams/c4-component-ordering-inventory.mmd)  
+> *Tệp sơ đồ nguồn Catalog, Payment & Shipping:* [`diagrams/c4-component-catalog-payment-shipping.mmd`](file:///d:/ShopHub/diagrams/c4-component-catalog-payment-shipping.mmd)
 
 ### 5.1. Ordering Component
 
@@ -267,6 +274,8 @@ flowchart TB
 
 ## 6. Deployment view
 
+> *Tệp sơ đồ nguồn:* [`diagrams/deployment.mmd`](file:///d:/ShopHub/diagrams/deployment.mmd)
+
 ```mermaid
 flowchart TB
     subgraph Client["Client"]
@@ -305,6 +314,8 @@ flowchart TB
 
 ## 7. Sequence diagram — Luồng đặt hàng bằng Saga (orchestration)
 
+> *Tệp sơ đồ nguồn:* [`diagrams/sequence-saga.mmd`](file:///d:/ShopHub/diagrams/sequence-saga.mmd)
+
 ```mermaid
 sequenceDiagram
     participant C as Khách hàng
@@ -342,6 +353,8 @@ sequenceDiagram
 - Khi Payment trả lỗi, điều gì xảy ra với tồn kho: bước bù trừ `ReleaseStock` phải chạy, và phải có log để chứng minh tồn kho đã trở về đúng số.
 
 ## 8. Sequence diagram — Flash sale trừ kho
+
+> *Tệp sơ đồ nguồn:* [`diagrams/sequence-flashsale.mmd`](file:///d:/ShopHub/diagrams/sequence-flashsale.mmd)
 
 ```mermaid
 sequenceDiagram
@@ -396,7 +409,7 @@ Sau quá trình đánh giá kiến trúc ATAM tại mốc M3 và ghi nhận ph�
 - **Giải pháp v2 (Dual-Gate & Resync Protocol):**
   1. **PostgreSQL là Single Source of Truth:** Mọi lệnh trừ kho quyết định cuối cùng đều phải vượt qua `UPDATE products SET stock = stock - $qty WHERE id = $id AND stock >= $qty`. Nếu Postgres từ chối, transaction rollback ngay lập tức.
   2. **Reconciliation & Auto Resync:** Bổ sung cơ chế `syncFlashStockFromDb()` khi hệ thống khởi động và API endpoint đối soát `POST /admin/sync-flash-stock` cho phép đồng bộ cưỡng bức giá trị từ PostgreSQL sang Redis khi phát hiện sai lệch.
-  3. **ADR bổ sung:** Ban hành [ADR-012](file:///d:/ShopHub/docs/ADR/ADR-012.md) quy định chiến lược khắc phục sự cố Redis Gate & Single Source of Truth.
+  3. **ADR bổ sung:** Ban hành [ADR-012](file:///d:/ShopHub/adr/ADR-012.md) quy định chiến lược khắc phục sự cố Redis Gate & Single Source of Truth.
 
 ```mermaid
 sequenceDiagram
@@ -422,7 +435,7 @@ sequenceDiagram
   1. **Background Recovery Scanner:** Bổ sung một worker chạy định kỳ (mỗi 10–30 giây) quét các đơn hàng ở trạng thái `RESERVED` có thời gian tạo vượt quá timeout thanh toán (ví dụ: > 60 giây).
   2. **Tự động kích hoạt bù trừ:** Quét kiểm tra trạng thái thanh toán; nếu không có giao dịch thành công hợp lệ, worker tự động chạy bù trừ hoàn kho trong Postgres và Redis, chuyển đơn sang `PAYMENT_FAILED` và ghi outbox event `SagaAutoCompensated`.
   3. **Tính Idempotent của bù trừ:** Sử dụng cập nhật có điều kiện `WHERE id = $id AND status = 'PENDING'` để đảm bảo dù worker quét nhiều lần thì tồn kho chỉ được hoàn trả đúng 1 lần duy nhất.
-  4. **ADR bổ sung:** Ban hành [ADR-011](file:///d:/ShopHub/docs/ADR/ADR-011.md) quy định cơ chế quét Saga kẹt và bảo đảm tính Idempotent cho bù trừ.
+  4. **ADR bổ sung:** Ban hành [ADR-011](file:///d:/ShopHub/adr/ADR-011.md) quy định cơ chế quét Saga kẹt và bảo đảm tính Idempotent cho bù trừ.
 
 ```mermaid
 sequenceDiagram

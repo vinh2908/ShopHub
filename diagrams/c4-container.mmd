@@ -1,0 +1,48 @@
+flowchart TB
+    subgraph ClientTier["Tầng Client"]
+        Browser["Trình duyệt người dùng\n[SPA HTML/JS/CSS]"]
+    end
+
+    subgraph ShopHubSys["ShopHub Backend System (Modular Monolith)"]
+        API["API Entry & Routing\n[Express Middleware]\nXác thực, CORS, Idempotency, Rate Limiter"]
+
+        subgraph BoundedModules["Các Bounded Context Modules (In-Process)"]
+            CatalogSvc["Catalog Module\nQuản lý sản phẩm & Full-text search"]
+            OrderSvc["Ordering Module\nQuản lý đơn hàng & Saga Orchestrator"]
+            InvSvc["Inventory Module\nTrừ kho nguyên tử & hoàn kho bù trừ"]
+            PaySvc["Payment Module\nAdapter VNPay / MoMo mock"]
+            ShipSvc["Shipping Module\nAdapter GHN / GHTK mock"]
+            RecSvc["Recommendation Module\nGợi ý sản phẩm (Isolated Fallback)"]
+            ReviewSvc["Review Module\nĐánh giá sản phẩm (Isolated)"]
+            OutboxRelay["Outbox Relay Worker\nTiến trình quét và publish outbox định kỳ"]
+        end
+
+        Cache[("Redis Cache & Flash Gate\n[In-Memory Store]\nCache kết quả tìm kiếm (TTL 30s)\nAtomic gate DECRBY")]
+        DB[("PostgreSQL Database\n[Relational Database]\nBảng: products, orders, outbox\nGIN index cho tsvector")]
+    end
+
+    PayExternal["External Payment Gateways\n[VNPay / MoMo API Mock]"]
+    ShipExternal["External Shipping Providers\n[GHN / GHTK API Mock]"]
+
+    Browser -->|HTTPS / REST API JSON| API
+    API -->|In-memory function call| CatalogSvc
+    API -->|In-memory function call| OrderSvc
+    API -->|In-memory function call| InvSvc
+    API -->|In-memory function call| PaySvc
+    API -->|In-memory function call| ShipSvc
+    API -->|Async Non-blocking call / Graceful Degradation| RecSvc
+    API -->|Async Non-blocking call| ReviewSvc
+
+    CatalogSvc -->|TCP Redis Protocol / GET, SET EX 30| Cache
+    CatalogSvc -->|SQL / pg pool connection / tsvector @@ query| DB
+
+    OrderSvc -->|Atomic DECRBY, INCRBY / TCP| Cache
+    OrderSvc -->|ACID Transaction: UPDATE stock, INSERT order, INSERT outbox| DB
+
+    InvSvc -->|Conditional UPDATE stock >= qty / SQL| DB
+    InvSvc -->|Atomic counter update / TCP| Cache
+
+    PaySvc -->|HTTPS REST / Mock network delay| PayExternal
+    ShipSvc -->|HTTPS REST / Mock tracking generation| ShipExternal
+
+    OutboxRelay -->|Polling SELECT WHERE published=FALSE / SQL| DB

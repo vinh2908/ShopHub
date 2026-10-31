@@ -1,0 +1,26 @@
+flowchart TB
+    subgraph Client["Client"]
+        Browser["Trình duyệt / App"]
+    end
+    subgraph Cloud["Môi trường chạy (Docker Compose ở M4)"]
+        LB["Load Balancer / API entry\nRate limiting"]
+        API1["API instance 1"]
+        API2["API instance 2 (khi scale)"]
+        Worker["Worker\nXử lý event, bù trừ Saga"]
+        Redis["Redis\nCache, trừ kho nguyên tử, hàng đợi"]
+        Broker2["Message Broker\nRabbitMQ / Kafka (M4 chọn một)"]
+        Postgres["PostgreSQL\nĐơn hàng, tồn kho, thanh toán"]
+        Search["Search Index\nElasticsearch hoặc DB full-text (xem ADR-003)"]
+    end
+    Browser --> LB
+    LB --> API1
+    LB --> API2
+    API1 --> Redis
+    API1 --> Postgres
+    API1 --> Broker2
+    API2 --> Redis
+    API2 --> Postgres
+    API2 --> Broker2
+    Worker --> Broker2
+    Worker --> Postgres
+    Worker --> Redis

@@ -1,0 +1,27 @@
+sequenceDiagram
+    participant C as Khách hàng
+    participant O as Ordering (Saga Orchestrator)
+    participant I as Inventory
+    participant P as Payment (mock)
+    participant S as Shipping
+    C->>O: POST /orders (kèm idempotency key)
+    O->>O: Kiểm tra idempotency, tạo đơn PENDING
+    O->>I: ReserveStock
+    alt Còn hàng
+        I-->>O: StockReserved
+        O->>P: ChargePayment
+        alt Thanh toán thành công
+            P-->>O: PaymentSucceeded
+            O->>S: CreateShipment
+            S-->>O: ShipmentCreated
+            O->>C: OrderConfirmed
+        else Thanh toán thất bại
+            P-->>O: PaymentFailed
+            O->>I: ReleaseStock (bù trừ)
+            I-->>O: StockReleased
+            O->>C: OrderCancelled, thông báo không trừ tiền
+        end
+    else Hết hàng
+        I-->>O: StockOutOfStock
+        O->>C: Hết hàng, không tạo đơn thành công
+    end

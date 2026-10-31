@@ -1,0 +1,20 @@
+flowchart TB
+    subgraph ShopHubBoundary["Hệ thống ShopHub (Hệ thống phần mềm)"]
+        Web["ShopHub Web / Single Page App\n[Container: Nginx / HTML/JS]\nCung cấp giao diện duyệt hàng, tìm kiếm, giỏ hàng, đặt hàng"]
+        Backend["ShopHub Core Backend\n[Container: Node.js / Express]\nXử lý nghiệp vụ modular monolith, Saga, tồn kho, thanh toán"]
+        Web -->|REST / HTTPS| Backend
+    end
+
+    Customer["Khách hàng\n[Person]\nNgười tiêu dùng mua sắm đặc sản"]
+    Seller["Người bán hàng\n[Person]\nCơ sở sản xuất đặc sản miền Trung"]
+    Admin["Quản trị viên sàn\n[Person]\nVận hành hệ thống, đối soát"]
+
+    PayGW["Cổng thanh toán bên thứ ba (Mock)\n[External System]\nVNPay / MoMo - Xác thực giao dịch thanh toán"]
+    ShipProv["Đơn vị vận chuyển bên thứ ba (Mock)\n[External System]\nGHN / GHTK - Tiếp nhận đơn và cập nhật vận đơn"]
+
+    Customer -->|Duyệt, tìm kiếm và đặt hàng qua Web / HTTPS| Web
+    Seller -->|Quản lý gian hàng, sản phẩm qua Web / HTTPS| Web
+    Admin -->|Đối soát, quản trị qua Web / HTTPS| Web
+
+    Backend -->|Gửi yêu cầu thanh toán qua Adapter / HTTPS REST| PayGW
+    Backend -->|Tạo vận đơn qua Adapter / HTTPS REST| ShipProv

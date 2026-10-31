@@ -1,0 +1,26 @@
+flowchart TB
+    subgraph OrderingModule["Ordering Container / Module"]
+        Ctrl["Order Controller\nNhận HTTP POST /orders, trích xuất Idempotency Key"]
+        Saga["Saga Orchestrator\nĐiều phối luồng: Reserve -> Charge -> Confirm / Compensate"]
+        IdemGuard["Idempotency Checker\nTruy vấn và bảo vệ chống trùng đơn (Postgres UNIQUE)"]
+        OrderRepo["Order Repository\nThực thi câu lệnh SQL INSERT/UPDATE đơn hàng"]
+        OutboxWriter["Outbox Writer\nGhi event (OrderCreated, PaymentFailed, OrderConfirmed) vào cùng DB Tx"]
+    end
+
+    Ctrl -->|Kiểm tra request| IdemGuard
+    IdemGuard -->|Request hợp lệ mới| Saga
+    Saga -->|Lưu trạng thái PENDING / CONFIRMED| OrderRepo
+    Saga -->|Ghi log sự kiện nguyên tử| OutboxWriter
+
+    subgraph InventoryModule["Inventory Container / Module"]
+        InvCtrl["Inventory Controller\nTiếp nhận lệnh trừ kho và hoàn kho"]
+        StockSvc["Stock Service\nQuản lý quy tắc nghiệp vụ tồn kho"]
+        RedisFlashGate["Redis Atomic Flash Gate\nThực hiện DECRBY nguyên tử chặn overselling"]
+        PostgresConditional["Postgres Conditional Guard\nUPDATE products SET stock = stock - qty WHERE stock >= qty"]
+        CompensationHandler["Compensation Handler\nThực hiện INCRBY và UPDATE stock = stock + qty khi thanh toán lỗi"]
+    end
+
+    InvCtrl --> StockSvc
+    StockSvc -->|Bước 1: Chắn lưu lượng đỉnh| RedisFlashGate
+    StockSvc -->|Bước 2: Trừ kho bền vững trong DB Tx| PostgresConditional
+    StockSvc -->|Bù trừ khi lỗi| CompensationHandler

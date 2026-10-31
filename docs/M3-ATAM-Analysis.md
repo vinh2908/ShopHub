@@ -110,8 +110,8 @@ Dựa trên ma trận Utility Tree tại M1 (xếp hạng theo Tầm quan trọn
 
 | Mã Rủi ro / Đánh đổi | Phân loại | Thành phần gắn liền | QA Scenario | Mức độ nghiêm trọng | Biện pháp xử lý trong Design v2 |
 |---|---|---|---|---|---|
-| **Risk R1** | Rủi ro hạ tầng | `Redis Flash Gate` / `Inventory Module` | QA1 (Flash Sale) | **Cao (High)** | Thêm cơ chế Recovery Resync từ PostgreSQL sang Redis khi khởi động và endpoint đối soát cưỡng bức `POST /admin/sync-flash-stock`. Ban hành [ADR-012](file:///d:/ShopHub/docs/ADR/ADR-012.md). |
-| **Risk R2** | Rủi ro logic | `Saga Orchestrator` / `Ordering Module` | QA2 (Saga Bù trừ) | **Cao (High)** | Bổ sung Background Stuck Saga Recovery Worker định kỳ quét các đơn kẹt `RESERVED` quá 60s để tự động bù trừ idempotent. Ban hành [ADR-011](file:///d:/ShopHub/docs/ADR/ADR-011.md). |
+| **Risk R1** | Rủi ro hạ tầng | `Redis Flash Gate` / `Inventory Module` | QA1 (Flash Sale) | **Cao (High)** | Thêm cơ chế Recovery Resync từ PostgreSQL sang Redis khi khởi động và endpoint đối soát cưỡng bức `POST /admin/sync-flash-stock`. Ban hành [ADR-012](file:///d:/ShopHub/adr/ADR-012.md). |
+| **Risk R2** | Rủi ro logic | `Saga Orchestrator` / `Ordering Module` | QA2 (Saga Bù trừ) | **Cao (High)** | Bổ sung Background Stuck Saga Recovery Worker định kỳ quét các đơn kẹt `RESERVED` quá 60s để tự động bù trừ idempotent. Ban hành [ADR-011](file:///d:/ShopHub/adr/ADR-011.md). |
 | **Risk R3** | Rủi ro quy trình | `Test Harness` / `Documentation` | QA7 (Scale-out) | **Trung bình (Medium)** | Thiết lập quy định nghiêm ngặt: Mọi số liệu đo trong báo cáo phải là số đo thật kèm cấu hình máy; cấm ngoại suy số liệu lên 5.000 req/s. |
 | **Trade-off T1** | Đánh đổi thiết kế | `Redis Cache` / `Catalog Module` | QA5 (Hiệu năng tìm kiếm) | Chấp nhận có chủ đích | Chấp nhận eventual consistency cho dữ liệu hiển thị (TTL 30s), nhưng quyết định bán hàng luôn căn cứ vào tồn kho thực. |
 | **Trade-off T2** | Đánh đổi thiết kế | `Saga Orchestrator` | QA2 (Nhất quán luồng đặt) | Chấp nhận có chủ đích | Chấp nhận nhất quán cuối cùng thay vì 2PC để bảo vệ throughput và tính sẵn sàng của sàn. |
@@ -128,7 +128,7 @@ Dựa trên ma trận Utility Tree tại M1 (xếp hạng theo Tầm quan trọn
 - **Cơ chế triển khai:**
   1. Khi server khởi động (`start()`): Hàm `syncFlashStockFromDb()` tự động truy vấn số tồn kho mới nhất từ PostgreSQL và nạp lại vào Redis (`SET flash:stock:{id} {stock}`).
   2. Bổ sung API điều hành: `POST /admin/sync-flash-stock` cho phép người vận hành đồng bộ tức thời kho flash sale từ PostgreSQL sang Redis khi nghi ngờ có sự cố lệch pha mà không cần khởi động lại ứng dụng.
-  3. Cập nhật tài liệu: Ban hành [ADR-012](file:///d:/ShopHub/docs/ADR/ADR-012.md).
+  3. Cập nhật tài liệu: Ban hành [ADR-012](file:///d:/ShopHub/adr/ADR-012.md).
 
 ### 4.2. Giải pháp cho Risk R2: Stuck Saga Recovery Worker & Compensation Idempotency (ADR-011)
 - **Thiết kế v2:** Loại bỏ sự phụ thuộc duy nhất vào bước bù trừ inline. Bổ sung tiến trình quét nền tự động khôi phục các đơn hàng bị treo.
@@ -142,7 +142,7 @@ Dựa trên ma trận Utility Tree tại M1 (xếp hạng theo Tầm quan trọn
      ```
   2. Với mỗi đơn kẹt tìm thấy, worker tự động chạy bù trừ: hoàn lại tồn kho trong PostgreSQL (`UPDATE products SET stock = stock + $qty`), hoàn lại Redis gate (`INCRBY`), chuyển trạng thái đơn sang `PAYMENT_FAILED` với saga_step `AUTO_COMPENSATED`, và ghi outbox event `SagaAutoCompensated`.
   3. Đảm bảo tính Idempotent tuyệt đối thông qua điều kiện lọc `status = 'PENDING'`.
-  4. Cập nhật tài liệu: Ban hành [ADR-011](file:///d:/ShopHub/docs/ADR/ADR-011.md).
+  4. Cập nhật tài liệu: Ban hành [ADR-011](file:///d:/ShopHub/adr/ADR-011.md).
 
 ---
 
