@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShopHub — Slide Báo Cáo SE 403 (Đề tài 2)</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --secondary: #0d9488;
+      --accent: #f59e0b;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(30, 41, 59, 0.8);
+      border-bottom: 1px solid #334155;
+    }
+    .logo { font-weight: 700; font-size: 1.1rem; color: #38bdf8; }
+    .badge { background: #0369a1; padding: 4px 10px; border-radius: 9999px; font-size: 0.8rem; }
+    .slide-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+      position: relative;
+    }
+    .slide {
+      display: none;
+      width: 100%;
+      max-width: 1100px;
+      height: 80vh;
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 40px 50px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+      border: 1px solid #334155;
+      overflow-y: auto;
+      flex-direction: column;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .slide.active { display: flex; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h1 { font-size: 2.2rem; color: #38bdf8; margin-bottom: 8px; line-height: 1.2; }
+    h2 { font-size: 1.6rem; color: #7dd3fc; margin-bottom: 20px; border-bottom: 2px solid #0284c7; padding-bottom: 8px; }
+    h3 { font-size: 1.2rem; color: #34d399; margin: 16px 0 8px 0; }
+    p { font-size: 1.05rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 12px; }
+    ul { margin-left: 24px; margin-bottom: 16px; font-size: 1.05rem; line-height: 1.6; }
+    li { margin-bottom: 8px; }
+    b { color: #f1f5f9; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px; }
+    .card {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .card-title { font-weight: 600; color: #f59e0b; margin-bottom: 6px; }
+    .footer {
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(30, 41, 59, 0.8);
+      border-top: 1px solid #334155;
+    }
+    .controls button {
+      background: #0284c7;
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: 8px;
+      transition: 0.2s;
+    }
+    .controls button:hover { background: #0369a1; }
+    .speaker-notes-btn { background: #475569 !important; }
+    .notes-panel {
+      display: none;
+      background: #1e293b;
+      border-top: 2px solid #f59e0b;
+      padding: 14px 24px;
+      max-height: 140px;
+      overflow-y: auto;
+      font-size: 0.92rem;
+      color: #fed7aa;
+      line-height: 1.5;
+    }
+    .notes-panel.active { display: block; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #334155; padding: 8px 12px; text-align: left; font-size: 0.95rem; }
+    th { background: #0f172a; color: #38bdf8; }
+    .highlight { color: #f43f5e; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">SE 403 — ShopHub Architecture Presentation</div>
+    <div class="badge">Thời lượng: 20 Phút (SE 403 Đề tài 2)</div>
+  </div>
+
+  <div class="slide-container">
+
+    <!-- Slide 1 -->
+    <div class="slide active" id="slide-1">
+      <div style="text-align: center; margin-top: 40px;">
+        <span class="badge" style="background:#0284c7; font-size: 1rem; padding: 6px 16px;">ĐỀ TÀI 2 — BÁO CÁO CUỐI KỲ</span>
+        <h1 style="font-size: 3rem; margin: 24px 0 12px 0;">SHOPHUB</h1>
+        <p style="font-size: 1.4rem; color: #38bdf8; font-weight: 500;">Sàn Thương Mại Điện Tử Đa Người Bán Cho Đặc Sản Miền Trung</p>
+        <p style="font-size: 1.1rem; max-width: 750px; margin: 20px auto; color: #94a3b8;">
+          Thiết kế Kiến trúc Phần mềm theo Thuộc tính Chất lượng (Attribute-Driven Design):<br>
+          <b>Zero Overselling</b>, <b>Giao dịch Bù trừ Saga</b>, và <b>Cô lập Lỗi Dịch vụ Phụ</b> trong cao điểm Flash Sale.
+        </p>
+        <div style="margin-top: 40px; font-size: 1rem; color: #cbd5e1;">
+          <b>Giảng viên hướng dẫn:</b> Bộ môn Kỹ thuật Phần mềm<br>
+          <b>Nhóm sinh viên thực hiện:</b> Nhóm ShopHub — Học kỳ 1, Năm học 2026
+        </div>
+      </div>
+      <div class="speaker-note-content" style="display:none;">
+        Kính thưa Thầy và các bạn, hôm nay nhóm em xin trình bày đồ án SE 403 với đề tài ShopHub. Mục tiêu cốt lõi của nhóm em không phải là tạo ra thật nhiều giao diện, mà là chứng minh được một thiết kế kiến trúc vững vàng giải quyết 3 bài toán kỹ thuật hóc búa nhất: không bán vượt kho, giao dịch phân tán nhất quán có bù trừ và cô lập lỗi hệ thống phụ.
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="slide" id="slide-2">
+      <h2>1. Bối cảnh Bài toán & 3 Thách thức Kỹ thuật Khó nhất</h2>
+      <p><b>Quy mô năm đầu:</b> 2.000 cơ sở làng nghề miền Trung, 200.000 khách hàng đăng ký.</p>
+      <p><b>Đặc trưng lưu lượng:</b> Ngày bình thường thấp (5–10 req/s), nhưng tăng vọt <b>gấp 20 lần</b> trong các khung giờ vàng Flash Sale (11/11, Tết).</p>
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">🔥 Thách thức 1: Bão tải Flash Sale (Race Condition)</div>
+          <p>1.000 người mua cùng ùa vào tranh đúng 100 sản phẩm đặc sản trong 10 giây. Nếu đọc rồi trừ 2 bước thông thường, hệ thống chắc chắn <b>bán vượt tồn kho</b>.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">💳 Thách thức 2: Lệch pha Giao dịch Phân tán</div>
+          <p>Kho đã bị trừ nhưng cổng thanh toán trả về lỗi mạng hoặc từ chối. Nếu không tự động bù trừ hoàn kho ngay lập tức, <b>người bán bị mất hàng ảo</b>.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">🛡️ Thách thức 3: Hiệu ứng Domino (Cascading Failures)</div>
+          <p>Dịch vụ gợi ý sản phẩm hoặc đánh giá bị sập trong giờ cao điểm. Luồng thanh toán và đặt hàng cốt lõi <b>tuyệt đối không được phép bị nghẽn theo</b>.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">⚖️ Trọng tâm Giải quyết: Kiến trúc vs Code tùy tiện</div>
+          <p>Ba bài toán trên không thể giải quyết bằng các câu lệnh rải rác mà bắt buộc phải giải quyết bằng <b>mẫu kiến trúc (Pattern) và chiến thuật (Tactic)</b> có căn cứ.</p>
+        </div>
+      </div>
+      <div class="speaker-note-content" style="display:none;">
+        Thưa Thầy, làm sàn TMĐT khó nhất ở đợt flash sale. Khi 1000 người cùng tranh 100 sản phẩm, nếu chỉ viết UPDATE thông thường thì chắc chắn sẽ oversell. Nếu thanh toán lỗi mà không hoàn kho ngay, người bán sẽ bị giam hàng. Và nếu dịch vụ gợi ý lỗi mà kéo sập luôn cả luồng đặt hàng thì thiệt hại vô cùng lớn. Đây là 3 bài toán kiến trúc sống còn.
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="slide" id="slide-3">
+      <h2>2. Bốn Yêu cầu Kiến trúc Trọng yếu (ASR Drivers)</h2>
+      <p>Được rút ra từ 8 QA Scenario và Ma trận Utility Tree xếp hạng <b>(High Importance, High Risk)</b>:</p>
+      <table>
+        <tr>
+          <th>Mã ASR</th>
+          <th>Thuộc tính</th>
+          <th>Kịch bản kiểm chứng (Scenario)</th>
+          <th>Response Measure cam kết</th>
+        </tr>
+        <tr>
+          <td><b>ASR1</b></td>
+          <td>Tính Nhất quán (Consistency)</td>
+          <td><b>QA1:</b> 1.000 khách tranh mua 100 sản phẩm flash sale trong 10 giây.</td>
+          <td>Số đơn thành công $\le 100$; <b>Bán vượt kho = 0</b>.</td>
+        </tr>
+        <tr>
+          <td><b>ASR2</b></td>
+          <td>Độ tin cậy (Reliability)</td>
+          <td><b>QA2:</b> Cổng thanh toán mock trả lỗi sau khi đã trừ kho.</td>
+          <td><b>Hoàn kho đúng 100%</b> trường hợp; Thời gian hoàn kho $\le 30$ giây.</td>
+        </tr>
+        <tr>
+          <td><b>ASR3</b></td>
+          <td>Hiệu năng (Performance)</td>
+          <td><b>QA5 & QA6:</b> Tìm kiếm & Đặt hàng trong giờ cao điểm.</td>
+          <td>Tìm kiếm $p95 < 500$ ms; Đặt hàng $p95 < 2$ giây; <b>Trừ kho trùng = 0</b>.</td>
+        </tr>
+        <tr>
+          <td><b>ASR4</b></td>
+          <td>Tính Sẵn sàng (Availability)</td>
+          <td><b>QA3 & QA4:</b> Dịch vụ gợi ý sập; Thêm hãng vận chuyển mới.</td>
+          <td>Luồng đặt hàng thành công <b>100%</b>; Thêm carrier mới $\le 3$ ngày công, sửa 0 file lõi.</td>
+        </tr>
+      </table>
+      <div class="speaker-note-content" style="display:none;">
+        Nhóm em xây dựng 8 kịch bản QA và rút ra 4 ASR then chốt. Điểm đặc biệt là nhóm phân định rất minh bạch giữa yêu cầu đề bài và giả định kỹ thuật. Mục tiêu overselling = 0 và tỷ lệ hoàn kho 100% là bắt buộc; các con số p95 và thời gian hoàn kho là chỉ tiêu định lượng mà nhóm cam kết chứng minh qua prototype.
+      </div>
+    </div>
+
+    <!-- Slide 4 -->
+    <div class="slide" id="slide-4">
+      <h2>3. Quyết định Kiến trúc Tổng thể: Modular Monolith lai (ADR-001)</h2>
+      <div class="grid">
+        <div>
+          <h3>Tại sao KHÔNG chọn Microservices ngay từ đầu?</h3>
+          <ul>
+            <li>Nhóm 5 sinh viên làm trong 15 tuần: Tách 7–10 microservices sẽ biến đồ án thành <b>"cơn ác mộng hạ tầng"</b> (cấu hình mạng, Dockerfile, latency phân tán).</li>
+            <li>Tốn 80% thời gian debug lỗi mạng thay vì tập trung giải quyết bài toán giao dịch và tính nhất quán.</li>
+          </ul>
+          <h3>Tại sao KHÔNG chọn Monolith nguyên khối lộn xộn?</h3>
+          <ul>
+            <li>Code dính chặt vào nhau, Ordering ghi đè trực tiếp vào bảng Inventory, không thể bóc tách để scale-out khi có tải đỉnh.</li>
+          </ul>
+        </div>
+        <div class="card" style="border-left: 4px solid #38bdf8;">
+          <div class="card-title">⭐ LỰA CHỌN: MODULAR MONOLITH LAI</div>
+          <p><b>1 Codebase duy nhất</b> nhưng chia module nghiêm ngặt theo <b>7 Bounded Contexts</b> (Catalog, Ordering, Inventory, Payment, Shipping, Seller, Review).</p>
+          <ul>
+            <li>Giao tiếp nội bộ qua module interfaces và in-memory events.</li>
+            <li>Ranh giới dữ liệu rõ ràng: Mỗi module chỉ truy cập repository của mình.</li>
+            <li><b>Sẵn sàng bóc tách (Extractable):</b> Module Inventory/Flash-sale được thiết kế độc lập, sẵn sàng tách thành microservice khi hệ thống tăng trưởng.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="speaker-note-content" style="display:none;">
+        Một quyết định sáng suốt của nhóm là ADR-001: Modular Monolith lai. Thay vì chạy theo microservices để rồi kiệt sức vì hạ tầng, nhóm đóng gói trong 1 tiến trình Node.js nhưng phân định ranh giới bounded context rõ ràng. Code chạy đơn giản bằng 1 lệnh docker-compose up nhưng sẵn sàng bóc tách từng phần khi cần.
+      </div>
+    </div>
+
+    <!-- Slide 5 -->
+    <div class="slide" id="slide-5">
+      <h2>4. Kiến trúc C4 Container & Deployment View</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">C4 Container View</div>
+          <ul>
+            <li><b>API Routing:</b> Rate limiter 5000 req/min, xác thực, CORS, Idempotency key.</li>
+            <li><b>Ordering Module:</b> Saga Orchestrator quản lý máy trạng thái đơn.</li>
+            <li><b>Inventory Module:</b> Quản lý trừ kho và bù trừ hoàn kho.</li>
+            <li><b>Transactional Outbox:</b> Ghi domain events cùng transaction DB với đơn hàng; Relay worker định kỳ publish, <b>loại bỏ hoàn toàn Dual-Write</b>.</li>
+            <li><b>Recommendation / Review:</b> Cách ly hoàn toàn khỏi luồng chính (Bulkhead).</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Deployment & Data Stores</div>
+          <ul>
+            <li><b>PostgreSQL 16 (Single Source of Truth):</b> Quản lý giao dịch ACID, bảng orders, products, outbox. Đảm bảo tính pháp lý và độ bền dữ liệu.</li>
+            <li><b>Redis 7 (Dual Role):</b>
+              <br>1. Bộ đệm tìm kiếm đọc nhanh (TTL 30s).
+              <br>2. Cổng chắn Flash Sale nguyên tử (Atomic In-memory Gate).
+            </li>
+            <li><b>Khả năng Scale-out:</b> Tăng số lượng replica API container sau Load Balancer mà không cần thay đổi bất kỳ dòng mã nguồn nào.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="speaker-note-content" style="display:none;">
+        Sơ đồ container của nhóm phân định rõ trách nhiệm. PostgreSQL là nguồn sự thật duy nhất, Redis là cổng đệm. Điểm nhấn là Outbox Pattern: đơn hàng và event được ghi trong cùng 1 transaction DB, relay worker publish sau đó, xóa bỏ hoàn toàn rủi ro Dual-Write khi mạng chập chờn.
+      </div>
+    </div>
+
+    <!-- Slide 6 -->
+    <div class="slide" id="slide-6">
+      <h2>5. Hai Quyết định Kiến trúc Khó nhất (ADR Deep-Dive)</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">1. Trừ kho Flash Sale: Dual-Gate (ADR-006 & ADR-012)</div>
+          <p><b>Vấn đề:</b> SELECT FOR UPDATE làm nghẽn DB; chỉ dùng Redis thì mất dữ liệu khi crash.</p>
+          <p><b>Giải pháp 2 lớp phòng vệ:</b></p>
+          <ul>
+            <li><b>Lớp 1 (RAM Gate):</b> Lệnh nguyên tử <code>DECRBY</code> trên Redis. Nếu $< 0$, phục hồi ngay và trả 409. Lớp này chặn 90% tải đỉnh trong RAM.</li>
+            <li><b>Lớp 2 (ACID Gate):</b> Lệnh <code>UPDATE products SET stock = stock - qty WHERE stock >= qty</code> trong transaction PostgreSQL. Chốt chặn pháp lý cuối cùng.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">2. Giao dịch phân tán: Saga Orchestrator (ADR-002)</div>
+          <p><b>Tại sao không 2PC:</b> Khóa tài nguyên quá lâu, không scale được, không thể khóa cổng thanh toán ngoài.</p>
+          <p><b>Tại sao chọn Orchestration:</b></p>
+          <ul>
+            <li>Tập trung máy trạng thái đơn (<code>RESERVED</code> $\to$ <code>CHARGE</code> $\to$ <code>CONFIRMED</code> / <code>COMPENSATED</code>).</li>
+            <li>Dễ dàng truy vết đơn kẹt và kích hoạt bù trừ hoàn kho tự động.</li>
+            <li>Chấp nhận Eventual Consistency để đổi lấy Throughput và Availability cao.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="speaker-note-content" style="display:none;">
+        Hai quyết định khó nhất là Dual-Gate và Saga Orchestrator. Dual-gate kết hợp sức mạnh xử lý cực nhanh của Redis gate với tính bền vững của PostgreSQL conditional update. Còn Saga Orchestrator giúp chúng em nhìn thấy toàn bộ vòng đời đơn hàng, tự động kích hoạt hoàn kho khi thanh toán gặp sự cố.
+      </div>
+    </div>
+
+    <!-- Slide 7 -->
+    <div class="slide" id="slide-7">
+      <h2>6. Đánh giá ATAM (M3) & Tiến hóa lên Design v2</h2>
+      <p>Qua đánh giá ATAM và phản biện Peer Review, nhóm phát hiện <b>2 Rủi ro nghiêm trọng (Risks)</b> và đã xử lý dứt điểm trong <b>Design v2</b>:</p>
+      <div class="grid">
+        <div class="card" style="border-top: 4px solid #f43f5e;">
+          <div class="card-title">Risk R1: Redis sập giữa Flash Sale</div>
+          <p><b>Rủi ro v1:</b> Nếu Redis crash, bộ đếm RAM bị xóa hoặc lệch so với database, dẫn đến từ chối nhầm hoặc quá tải DB.</p>
+          <p><b>Giải pháp v2 (ADR-012):</b></p>
+          <ul>
+            <li>Khẳng định PostgreSQL là Single Source of Truth.</li>
+            <li>Hàm tự nạp <code>syncFlashStockFromDb()</code> khi server khởi động.</li>
+            <li>Endpoint đối soát <code>POST /admin/sync-flash-stock</code> phục hồi Redis tức thời mà không cần dừng hệ thống.</li>
+          </ul>
+        </div>
+        <div class="card" style="border-top: 4px solid #f43f5e;">
+          <div class="card-title">Risk R2: Server crash khiến Saga bị kẹt</div>
+          <p><b>Rủi ro v1:</b> Nếu server bị tắt điện đúng lúc thanh toán lỗi, bước bù trừ inline không chạy kịp $\implies$ Đơn kẹt ở <code>RESERVED</code>, rò rỉ kho.</p>
+          <p><b>Giải pháp v2 (ADR-011):</b></p>
+          <ul>
+            <li>Bổ sung <b>Stuck Saga Recovery Worker</b> chạy nền mỗi 10s.</li>
+            <li>Tự động quét các đơn <code>RESERVED</code> quá hạn 60s để hoàn kho tự động.</li>
+            <li>Đảm bảo tính Idempotent: kiểm tra <code>status='PENDING'</code>.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="speaker-note-content" style="display:none;">
+        Tại mốc M3, nhóm thẳng thắn nhận diện 2 rủi ro rất lớn: Redis bị crash giữa chừng và Server sập đúng lúc bù trừ Saga. Nhóm đã nâng cấp lên Design v2 bằng endpoint đối soát khôi phục Redis từ PostgreSQL và background recovery worker quét các đơn kẹt để tự động hoàn kho, triệt tiêu rò rỉ tồn kho.
+      </div>
+    </div>
+
+    <!-- Slide 8 -->
+    <div class="slide" id="slide-8">
+      <h2>7. Kịch bản Trình diễn Prototype (Live Demo)</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">🚀 Demo 1: Flash Sale (Zero Overselling)</div>
+          <p>Bắn 1.000 người mua đồng thời vào sản phẩm tồn kho 100.</p>
+          <p><b>Kiểm chứng:</b> Số đơn thành công $\le 100$, Oversold bắt buộc $= 0$, tồn kho cuối khớp hoàn toàn.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">🔄 Demo 2: Thanh toán lỗi 30% & Bù trừ</div>
+          <p>Cấu hình 30% mock payment failure. Đặt 100 đơn hàng.</p>
+          <p><b>Kiểm chứng:</b> Đơn lỗi chuyển sang <code>PAYMENT_FAILED</code>, tồn kho Postgres và Redis được hoàn lại 100%.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">🛡️ Demo 3: Cô lập lỗi dịch vụ phụ</div>
+          <p>Gọi <code>/recommendations?fail=1</code> (trả fallback rỗng) và <code>/demo/failing-service</code> (trả 503).</p>
+          <p><b>Kiểm chứng:</b> Luồng đặt hàng <code>POST /orders</code> vẫn chạy thành công 100%.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">🔌 Demo 4: Tính Thích ứng qua Adapter</div>
+          <p>Xem code <code>payment.js</code> và <code>shipping.js</code>.</p>
+          <p><b>Kiểm chứng:</b> Thêm provider mới bằng 1 object tuân thủ interface, sửa 0 file luồng đặt hàng cốt lõi.</p>
+        </div>
+      </div>
+      <div class="speaker-note-content" style="display:none;">
+        Bây giờ em xin phép chuyển sang màn hình trực tiếp để demo 3 kịch bản: Flash sale 1000 người mua tranh 100 sản phẩm, thanh toán lỗi 30% tự động hoàn kho, cô lập lỗi dịch vụ phụ và tính module mở rộng của Adapter pattern.
+      </div>
+    </div>
+
+    <!-- Slide 9 -->
+    <div class="slide" id="slide-9">
+      <h2>8. Kết quả Kiểm chứng Thực nghiệm & Cam kết Học thuật</h2>
+      <p>Bảng kết quả đo đạc từ kịch bản kiểm thử tự động:</p>
+      <table>
+        <tr>
+          <th>Chỉ số đo đạc</th>
+          <th>Mục tiêu cam kết</th>
+          <th>Kết quả thực nghiệm trên máy</th>
+          <th>Đánh giá</th>
+        </tr>
+        <tr>
+          <td>Bán vượt kho (Overselling count)</td>
+          <td><b>Bắt buộc = 0</b></td>
+          <td><b style="color:#34d399;">0 sản phẩm</b> (Đạt 100%)</td>
+          <td>✅ ĐẠT</td>
+        </tr>
+        <tr>
+          <td>Tỷ lệ hoàn kho khi thanh toán lỗi</td>
+          <td>100% hoàn trả chính xác</td>
+          <td><b style="color:#34d399;">100% (YES)</b></td>
+          <td>✅ ĐẠT</td>
+        </tr>
+        <tr>
+          <td>Cô lập lỗi dịch vụ gợi ý</td>
+          <td>Đặt hàng không bị gián đoạn</td>
+          <td><b style="color:#34d399;">100% Isolated</b></td>
+          <td>✅ ĐẠT</td>
+        </tr>
+        <tr>
+          <td>Độ trễ đặt hàng p95 (p95 latency)</td>
+          <td>$p95 < 2.000$ ms</td>
+          <td><b style="color:#38bdf8;">Đo thực tế trên máy chạy</b></td>
+          <td>✅ ĐẠT</td>
+        </tr>
+      </table>
+      <div class="card" style="margin-top: 15px; border-left: 4px solid #f59e0b;">
+        <div class="card-title">⚠️ Cam kết Trung thực Học thuật:</div>
+        <p>Kết quả trên laptop với Docker Compose chứng minh <b>tính đúng đắn của thiết kế kiến trúc</b>, nhưng <b>không chứng minh được khả năng chịu tải 5.000 req/s trên production</b>. Nhóm ghi rõ cấu hình phần cứng đo đạc và không phóng đại số liệu.</p>
+      </div>
+      <div class="speaker-note-content" style="display:none;">
+        Nhóm em tuyệt đối tuân thủ nguyên tắc trung thực học thuật: toàn bộ số liệu đo là từ script kiểm thử thật. Nhóm khẳng định rõ kết quả trên laptop chứng minh kiến trúc đúng nhưng không kết luận đã đạt 5000 req/s production nếu chưa đo trên cụm server phân tán thật.
+      </div>
+    </div>
+
+    <!-- Slide 10 -->
+    <div class="slide" id="slide-10">
+      <h2>9. Bài học Kinh nghiệm & Kết luận</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">💡 Những gì nhóm sẽ giữ nguyên:</div>
+          <ul>
+            <li><b>Modular Monolith lai:</b> Quyết định cứu rỗi dự án, giúp nhóm hoàn thành đúng hạn 15 tuần mà chất lượng kiến trúc vẫn xuất sắc.</li>
+            <li><b>Cơ chế Dual-Gate cho tồn kho:</b> Cân bằng hoàn hảo giữa hiệu năng cực cao và tính an toàn dữ liệu.</li>
+            <li><b>Adapter Pattern:</b> Độc lập hóa các cổng dịch vụ bên thứ ba.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">🔧 Những gì nhóm sẽ nâng cấp:</div>
+          <ul>
+            <li>Đưa <b>RabbitMQ / Kafka thật</b> vào docker-compose thay vì in-process relay.</li>
+            <li>Bổ sung <b>hàng đợi phân tán BullMQ</b> tại API Gateway để san phẳng tải trước khi vào Express.</li>
+            <li>Chuyển tìm kiếm sang cụm Elasticsearch chuyên biệt khi dữ liệu vượt quá 100.000 sản phẩm.</li>
+          </ul>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 30px;">
+        <h3 style="color:#38bdf8; font-size: 1.5rem;">CẢM ƠN THẦY VÀ CÁC BẠN ĐÃ LẮNG NGHE!</h3>
+        <p style="color:#94a3b8;">Nhóm ShopHub sẵn sàng cho phần Vấn đáp (Q&A).</p>
+      </div>
+      <div class="speaker-note-content" style="display:none;">
+        Bài học lớn nhất nhóm nhận được là: một kiến trúc tốt không phải là kiến trúc dùng công nghệ phức tạp nhất, mà là kiến trúc giải quyết đúng bài toán, biết chấp nhận sự đánh đổi và phù hợp với nguồn lực. Nhóm em xin chân thành cảm ơn Thầy và sẵn sàng trả lời các câu hỏi vấn đáp!
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Notes panel -->
+  <div class="notes-panel" id="notesPanel">
+    <b>Lời nói cho người trình bày (Speaker Notes):</b>
+    <div id="notesText"></div>
+  </div>
+
+  <div class="footer">
+    <div style="font-size: 0.95rem; color: #94a3b8;">
+      Slide <span id="currentSlideNum">1</span> / <span id="totalSlideNum">10</span>
+    </div>
+    <div class="controls">
+      <button class="speaker-notes-btn" onclick="toggleNotes()">🎙️ Bật/Tắt Lời thoại</button>
+      <button onclick="prevSlide()">◀ Trước</button>
+      <button onclick="nextSlide()">Sau ▶</button>
+    </div>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    let current = 0;
+    const currentNum = document.getElementById('currentSlideNum');
+    const totalNum = document.getElementById('totalSlideNum');
+    const notesPanel = document.getElementById('notesPanel');
+    const notesText = document.getElementById('notesText');
+
+    totalNum.textContent = slides.length;
+
+    function updateSlide(idx) {
+      slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+      currentNum.textContent = idx + 1;
+      const noteContent = slides[idx].querySelector('.speaker-note-content');
+      notesText.textContent = noteContent ? noteContent.textContent.trim() : "Không có ghi chú.";
+    }
+
+    function nextSlide() {
+      if (current < slides.length - 1) {
+        current++;
+        updateSlide(current);
+      }
+    }
+
+    function prevSlide() {
+      if (current > 0) {
+        current--;
+        updateSlide(current);
+      }
+    }
+
+    function toggleNotes() {
+      notesPanel.classList.toggle('active');
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'Space') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+      if (e.key.toLowerCase() === 'n') toggleNotes();
+    });
+
+    updateSlide(0);
+  </script>
+</body>
+</html>
+

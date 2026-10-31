@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ShopHub — Demo</title>
+<style>body{font-family:system-ui,sans-serif;max-width:900px;margin:24px auto;padding:0 16px} .card{border:1px solid #ddd;border-radius:8px;padding:12px;margin:8px 0} button{padding:8px 14px;cursor:pointer} input{padding:8px}</style>
+</head>
+<body>
+<h1>ShopHub — San TMDT dac san mien Trung (ban demo)</h1>
+<p>API mac dinh: <code>http://localhost:3000</code>. Nhap lai neu API chay o dia chi khac.</p>
+<label>API base <input id="apiBase" value="http://localhost:3000" style="width:320px"></label>
+<button onclick="seed()">Seed san pham</button>
+<button onclick="loadProducts()">Tai san pham</button>
+<h2>San pham</h2>
+<div id="products"></div>
+<h2>Dat hang</h2>
+<label>Product ID <input id="productId" type="number" value="1"></label>
+<label>So luong <input id="qty" type="number" value="1"></label>
+<label>Thanh toan
+  <select id="pay"><option value="vnpay">VNPay (mock)</option><option value="momo">MoMo (mock)</option></select></label>
+<label>Van chuyen
+  <select id="ship"><option value="ghn">GHN (mock)</option><option value="ghtk">GHTK (mock)</option></select></label>
+<button onclick="placeOrder()">Dat hang</button>
+<div id="orderResult" class="card"></div>
+<h2>Tra cuu don hang</h2>
+<label>Order ID <input id="orderId" type="number"></label>
+<button onclick="lookupOrder()">Xem</button>
+<div id="lookupResult" class="card"></div>
+<h2>Goi y (demo cach ly loi)</h2>
+<button onclick="loadRecs(false)">Tai goi y</button>
+<button onclick="loadRecs(true)">Gia lap dich vu goi y loi</button>
+<div id="recs" class="card"></div>
+<script src="app.js"></script>
+</body>
+</html>
